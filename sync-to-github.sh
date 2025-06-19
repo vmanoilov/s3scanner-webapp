@@ -1,19 +1,15 @@
 #!/bin/sh
 
 # S3Scanner GitHub Sync Script (assumes repo already exists)
-# Initializes git, commits files, and pushes to existing remote
+# Initializes git, commits files, and force-pushes to GitHub ONCE
 
 set -e
 
-# Colors (only if terminal)
+# Colors
 if [ -t 1 ]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[1;33m'
-    BLUE='\033[0;34m'
-    NC='\033[0m'
+    RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; BLUE='\033[0;34m'; NC='\033[0m'
 else
-    RED='' GREEN='' YELLOW='' BLUE='' NC=''
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; NC=''
 fi
 
 print_status()  { printf "${BLUE}[INFO]${NC} %s\n" "$1"; }
@@ -25,28 +21,28 @@ GITHUB_USERNAME="vmanoilov"
 REPO_NAME="s3scanner-webapp"
 REPO_URL="https://github.com/vmanoilov/s3scanner-webapp"
 
-# Check git installed
+# Check git
 if ! command -v git >/dev/null 2>&1; then
-    print_error "Git is not installed. Please install it first."
+    print_error "Git is not installed. Exiting."
     exit 1
 fi
 
-# Container env fallback config
+# Docker/container safe config
 if [ -f "/.dockerenv" ] || [ "$BOLT_ENV" = "true" ]; then
-    print_warning "Container environment detected"
+    print_warning "Container detected, applying safe git settings"
     git config --global --add safe.directory /home/project 2>/dev/null || true
     git config --global init.defaultBranch main 2>/dev/null || true
     [ -z "$(git config --global user.name)" ] && git config --global user.name "vmanoilov"
     [ -z "$(git config --global user.email)" ] && git config --global user.email "vmanoilov@users.noreply.github.com"
 fi
 
-# Initialize git
-print_status "Initializing git repository..."
+# Init repo
+print_status "Checking repo..."
 if [ ! -d ".git" ]; then
     git init
-    print_success "Git repo initialized"
+    print_success "Initialized new git repo"
 else
-    print_status "Git repo already exists"
+    print_status "Git repo already initialized"
 fi
 
 # Create .gitignore if needed
@@ -76,23 +72,27 @@ git add .
 if git diff --staged --quiet; then
     print_warning "No changes to commit"
 else
-    print_status "Committing changes..."
     git commit -m "Initial commit: S3Scanner WebApp setup"
-    print_success "Commit successful"
+    print_success "Committed changes"
 fi
 
 # Add remote if missing
 if ! git remote | grep -q origin; then
-    print_status "Adding remote 'origin'..."
     git remote add origin "$REPO_URL.git"
-    print_success "Remote added: $REPO_URL"
+    print_status "Added origin: $REPO_URL"
 fi
 
-# Push to GitHub
-print_status "Pushing to GitHub..."
-git branch -M main
-git push -u origin main
+# One-time force push
+print_warning "About to FORCE PUSH. This will overwrite GitHub with your local version."
+printf "${YELLOW}Continue? (y/N): ${NC}"
+read confirm
+if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+    git branch -M main
+    git push --force origin main
+    print_success "Force push complete"
+else
+    print_status "Push cancelled"
+fi
 
-print_success "Push complete!"
-print_status "Repository URL: $REPO_URL"
+print_status "Done. Repo: $REPO_URL"
 
