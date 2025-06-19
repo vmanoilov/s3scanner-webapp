@@ -4,34 +4,30 @@
 <img src="https://img.shields.io/badge/Version-2.0.0-blue.svg"/>
 <img src="https://img.shields.io/badge/Docker-Ready-green.svg"/>
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
-<img src="https://img.shields.io/badge/React-18.0-blue.svg"/>
-<img src="https://img.shields.io/badge/FastAPI-Latest-green.svg"/>
+<img src="https://img.shields.io/badge/Go-1.23-blue.svg"/>
+<img src="https://img.shields.io/badge/S3Scanner-WebApp-green.svg"/>
 </p>
 
-A modern, full-stack web application for scanning S3 buckets across multiple cloud providers with advanced features including bucket name generation, real-time scanning, and comprehensive reporting.
+**Repository**: [https://github.com/vmanoilov/s3scanner-webapp](https://github.com/vmanoilov/s3scanner-webapp)
+
+A modern, full-stack application for scanning S3 buckets across multiple cloud providers with advanced features including intelligent bucket discovery, real-time scanning, and comprehensive reporting.
 
 ## ✨ Features
 
 ### 🎯 **Core Functionality**
 - **Multi-Provider Scanning**: AWS, DigitalOcean, GCP, Linode, Scaleway, Wasabi, and custom providers
-- **Smart Bucket Discovery**: Intelligent bucket name generation with predefined categories
-- **Real-time Scanning**: Live progress updates with WebSocket integration
+- **Smart Bucket Discovery**: Intelligent bucket name validation and detection
+- **Real-time Scanning**: Concurrent scanning with progress tracking
 - **Permission Analysis**: Comprehensive bucket permission and security assessment
 - **Object Enumeration**: Detailed object listing and analysis
-
-### 🎨 **Modern Web Interface**
-- **Responsive Design**: Mobile-first, works on all devices
-- **Dark/Light Themes**: Customizable UI themes
-- **Interactive Dashboard**: Real-time charts and statistics
-- **Advanced Filtering**: Multi-criteria search and filtering
-- **Export Capabilities**: CSV, JSON, and PDF report generation
+- **Database Storage**: PostgreSQL integration for scan history
 
 ### 🚀 **Advanced Features**
-- **Automated Scanning**: Scheduled scans with cron-like scheduling
-- **API Integration**: RESTful API with comprehensive documentation
-- **Database Storage**: PostgreSQL with full scan history
-- **Message Queuing**: RabbitMQ for distributed scanning
+- **Message Queuing**: RabbitMQ for distributed scanning workloads
 - **Docker Deployment**: One-command deployment with Docker Compose
+- **Configuration Management**: Flexible provider and database configuration
+- **Comprehensive Testing**: Unit and integration tests included
+- **CI/CD Ready**: GitHub Actions workflows for automated builds
 
 ## 🏃‍♂️ Quick Start
 
@@ -44,20 +40,20 @@ A modern, full-stack web application for scanning S3 buckets across multiple clo
 
 ```bash
 # Clone and deploy
-git clone <your-repo-url>
-cd s3scanner-web
+git clone https://github.com/vmanoilov/s3scanner-webapp.git
+cd s3scanner-webapp
 chmod +x start.sh
 ./start.sh
 ```
 
-**That's it!** 🎉 Access your application at: **http://localhost:8080**
+**That's it!** 🎉 Your S3Scanner is now running!
 
 ### Manual Setup
 
 ```bash
 # Clone repository
-git clone <your-repo-url>
-cd s3scanner-web
+git clone https://github.com/vmanoilov/s3scanner-webapp.git
+cd s3scanner-webapp
 
 # Start all services
 docker-compose up -d
@@ -66,200 +62,206 @@ docker-compose up -d
 docker-compose ps
 ```
 
-## 📋 Service URLs
+## 📋 Service Configuration
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **Main Application** | http://localhost:8080 | Complete web interface |
-| Frontend | http://localhost:3000 | React frontend |
-| Backend API | http://localhost:8000 | FastAPI with auto-docs |
-| API Documentation | http://localhost:8000/docs | Interactive API docs |
-| RabbitMQ Management | http://localhost:15672 | Queue monitoring |
-| Database | localhost:5432 | PostgreSQL database |
+| Service | Port | Purpose |
+|---------|------|---------|
+| **S3Scanner API** | 8080 | Main scanning service |
+| **Database** | 5432 | PostgreSQL database |
+| **Message Queue** | 5672 | RabbitMQ for job processing |
+| **Queue Management** | 15672 | RabbitMQ web interface |
 
 **Default Credentials:**
 - RabbitMQ: `guest` / `guest`
-- Database: `s3scanner` / `password123`
+- Database: `postgres` / `example`
 
 ## 🎯 Usage Guide
 
-### 1. **Bucket Name Generation**
-- Select categories: Finance, Software, Production, Personal, Testing, etc.
-- Generate intelligent bucket name lists
-- Custom pattern matching and wordlist combinations
-
-### 2. **Scanning Operations**
-- **Single Bucket**: Enter bucket name directly
-- **Bulk Scanning**: Upload bucket lists or use generated names
-- **Scheduled Scans**: Set up automated scanning intervals
-- **Real-time Monitoring**: Live progress and result updates
-
-### 3. **Results Analysis**
-- **Permission Overview**: Visual permission matrix
-- **Security Assessment**: Risk scoring and recommendations
-- **Object Analysis**: File listing and metadata
-- **Export Options**: Multiple format downloads
-
-### 4. **API Integration**
+### 1. **Single Bucket Scanning**
 ```bash
-# Health check
-curl http://localhost:8000/health
+# Scan a specific bucket
+./s3scanner -bucket my-test-bucket -provider aws
 
-# Start scan
-curl -X POST http://localhost:8000/api/v1/scan \
-  -H "Content-Type: application/json" \
-  -d '{"bucket_name": "test-bucket", "provider": "aws"}'
+# Scan with enumeration
+./s3scanner -bucket my-test-bucket -provider aws -enumerate
 
-# Get results
-curl http://localhost:8000/api/v1/scans/{scan_id}
+# Scan and save to database
+./s3scanner -bucket my-test-bucket -provider aws -db
 ```
 
-## 🛠️ Management Commands
-
+### 2. **Bulk Scanning**
 ```bash
-# Application Management
-./start.sh start     # Start all services
-./start.sh stop      # Stop all services
-./start.sh restart   # Restart services
-./start.sh status    # Check service health
-./start.sh logs      # View application logs
-./start.sh clean     # Remove all containers and data
+# Scan from file
+./s3scanner -bucket-file buckets.txt -provider aws
 
-# Development
-./start.sh dev       # Start in development mode
-./start.sh test      # Run test suite
-./start.sh build     # Build all images
+# Use message queue for distributed scanning
+./s3scanner -mq -provider aws -threads 10
 ```
 
-## 🔧 Configuration
+### 3. **Multi-Provider Support**
+```bash
+# Scan DigitalOcean Spaces
+./s3scanner -bucket my-space -provider digitalocean
+
+# Scan custom S3-compatible provider
+./s3scanner -bucket my-bucket -provider custom
+
+# Scan Wasabi
+./s3scanner -bucket my-wasabi-bucket -provider wasabi
+```
+
+### 4. **Advanced Options**
+```bash
+# Verbose logging
+./s3scanner -bucket test -provider aws -verbose
+
+# JSON output
+./s3scanner -bucket test -provider aws -json
+
+# Multiple threads
+./s3scanner -bucket-file buckets.txt -provider aws -threads 20
+```
+
+## 🛠️ Configuration
 
 ### Environment Variables
 
-Create `.env` file:
-
-```bash
-# Application
-APP_ENV=production
-APP_DEBUG=false
-APP_HOST=0.0.0.0
-APP_PORT=8000
-
-# Database
-DB_HOST=db
-DB_PORT=5432
-DB_NAME=s3scanner
-DB_USER=s3scanner
-DB_PASSWORD=password123
-
-# Redis
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-# RabbitMQ
-RABBITMQ_HOST=rabbitmq
-RABBITMQ_PORT=5672
-RABBITMQ_USER=guest
-RABBITMQ_PASSWORD=guest
-
-# Security
-SECRET_KEY=your-secret-key-here
-JWT_SECRET=your-jwt-secret-here
-
-# AWS Credentials (optional)
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-```
-
-### Custom Providers
-
-Add custom S3-compatible providers in `config/providers.yml`:
+Create `config.yml`:
 
 ```yaml
-custom_providers:
-  vultr:
-    endpoint_format: "https://{region}.vultrobjects.com"
-    regions: ["ewr1", "sjc1", "ams1"]
+# Database configuration
+db:
+  uri: "postgresql://postgres:example@db_dev:5432/postgres"
+
+# Message queue configuration  
+mq:
+  queue_name: "aws"
+  uri: "amqp://guest:guest@localhost:5672"
+
+# Custom provider example
+providers:
+  custom:
+    insecure: false
+    endpoint_format: "https://$REGION.vultrobjects.com"
+    regions:
+      - "ewr1"
     address_style: "path"
-    
-  minio:
-    endpoint_format: "http://minio.local:9000"
-    regions: ["us-east-1"]
-    address_style: "path"
-    insecure: true
+```
+
+### Docker Environment
+
+Set environment variables in `.env`:
+
+```bash
+# Database
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=example
+POSTGRES_DB=postgres
+
+# RabbitMQ
+RABBITMQ_DEFAULT_USER=guest
+RABBITMQ_DEFAULT_PASS=guest
 ```
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   React Frontend│    │  Nginx Proxy     │    │  FastAPI Backend│
-│   (Port 3000)   ├────┤  (Port 8080)     ├────┤  (Port 8000)    │
+│   S3Scanner     │    │   PostgreSQL     │    │   RabbitMQ      │
+│   Application   ├────┤   Database       ├────┤   Message Queue │
+│   (Port 8080)   │    │   (Port 5432)    │    │   (Port 5672)   │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
-                                                         │
-                       ┌─────────────────┐              │
-                       │   PostgreSQL    ├──────────────┤
-                       │   (Port 5432)   │              │
-                       └─────────────────┘              │
-                                                         │
-                       ┌─────────────────┐              │
-                       │   RabbitMQ      ├──────────────┘
-                       │   (Port 5672)   │
-                       └─────────────────┘
 ```
+
+### Components
+
+- **Core Scanner**: Go-based S3 bucket scanner with multi-provider support
+- **Database Layer**: PostgreSQL for storing scan results and history
+- **Message Queue**: RabbitMQ for distributed scanning workloads
+- **Provider System**: Modular support for different cloud providers
+- **Worker System**: Concurrent scanning with configurable thread pools
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests
-./start.sh test
+# Run unit tests
+go test ./...
 
-# Manual testing
-docker-compose exec backend pytest
-docker-compose exec frontend npm test
+# Run integration tests (requires test services)
+TEST_DB=1 TEST_MQ=1 go test ./...
+
+# Run with coverage
+go test ./... -coverprofile=cover.out
+go tool cover -html=cover.out
 ```
 
-## 🚀 Production Deployment
+## 🚀 Development
 
-### SSL/HTTPS Setup
+### Building from Source
 
 ```bash
-# Generate SSL certificates
-./scripts/generate-ssl.sh
+# Build the application
+go build -o s3scanner .
 
-# Update docker-compose.prod.yml
-cp docker-compose.prod.yml docker-compose.yml
+# Build helper tools
+go build -o mqingest ./cmd/mqingest/
 
-# Deploy with SSL
-./start.sh start
+# Run locally
+./s3scanner -bucket test-bucket -provider aws -verbose
 ```
 
-### Monitoring Setup
+### Adding Custom Providers
+
+1. Implement the `StorageProvider` interface in `provider/`
+2. Add provider regions to `ProviderRegions` map
+3. Update provider factory in `NewProvider()` function
+4. Add tests for your provider
+
+### Docker Development
 
 ```bash
-# Add monitoring stack
-./start.sh monitoring
+# Development with auto-rebuild
+docker-compose -f .dev/docker-compose.yml up
 
-# Access dashboards
-# Grafana: http://localhost:3001
-# Prometheus: http://localhost:9090
+# Run with MITM proxy for debugging
+docker-compose -f .dev/docker-compose.yml --profile dev-mitm up
 ```
 
 ## 🛡️ Security Features
 
-- **Rate Limiting**: API request throttling
-- **CORS Protection**: Configurable cross-origin policies
-- **Input Validation**: Comprehensive request validation
-- **SQL Injection Prevention**: Parameterized queries
-- **XSS Protection**: Content security policies
-- **HTTPS Enforcement**: SSL/TLS encryption
+- **Input Validation**: Comprehensive bucket name validation
+- **Rate Limiting**: Configurable request throttling
+- **Secure Defaults**: Anonymous credentials by default
+- **SSL/TLS Support**: Configurable SSL verification
+- **Access Control**: Granular permission checking
+
+## 📊 Supported Providers
+
+| Provider | Regions | Address Style | Status |
+|----------|---------|---------------|--------|
+| **AWS** | All regions | Virtual Host | ✅ Full Support |
+| **DigitalOcean** | 10 regions | Path | ✅ Full Support |
+| **Google Cloud** | Global | Path | ✅ Full Support |
+| **Linode** | 25 regions | Virtual Host | ✅ Full Support |
+| **Scaleway** | 3 regions | Path | ✅ Full Support |
+| **Wasabi** | 15 regions | Path | ✅ Full Support |
+| **Dreamhost** | 1 region | Path | ✅ Full Support |
+| **Custom** | Configurable | Both | ✅ Full Support |
 
 ## 🤝 Contributing
 
-1. Fork the repository
+1. Fork the repository: [https://github.com/vmanoilov/s3scanner-webapp](https://github.com/vmanoilov/s3scanner-webapp)
 2. Create feature branch: `git checkout -b feature/amazing-feature`
 3. Commit changes: `git commit -m 'Add amazing feature'`
 4. Push to branch: `git push origin feature/amazing-feature`
 5. Open Pull Request
+
+### Development Guidelines
+
+- Follow Go best practices and conventions
+- Add tests for new functionality
+- Update documentation for new features
+- Ensure Docker compatibility
 
 ## 📄 License
 
@@ -267,20 +269,28 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation**: Check the `/docs` folder for detailed guides
-- **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Join GitHub Discussions for questions
-- **API Docs**: Visit http://localhost:8000/docs when running
+- **Repository**: [https://github.com/vmanoilov/s3scanner-webapp](https://github.com/vmanoilov/s3scanner-webapp)
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/vmanoilov/s3scanner-webapp/issues)
+- **Discussions**: Join [GitHub Discussions](https://github.com/vmanoilov/s3scanner-webapp/discussions)
+- **Documentation**: Check the repository wiki
 
 ## 🙏 Acknowledgments
 
-- Original S3Scanner project by sa7mon
-- React and FastAPI communities
+- Original S3Scanner project by [sa7mon](https://github.com/sa7mon/S3Scanner)
+- Go community for excellent tooling
 - Docker and containerization ecosystem
 - Security research community
+
+## 📈 Project Stats
+
+![GitHub stars](https://img.shields.io/github/stars/vmanoilov/s3scanner-webapp)
+![GitHub forks](https://img.shields.io/github/forks/vmanoilov/s3scanner-webapp)
+![GitHub issues](https://img.shields.io/github/issues/vmanoilov/s3scanner-webapp)
+![GitHub license](https://img.shields.io/github/license/vmanoilov/s3scanner-webapp)
 
 ---
 
 <p align="center">
-Made with ❤️ for the cybersecurity community
+<strong>Made with ❤️ for the cybersecurity community</strong><br>
+<a href="https://github.com/vmanoilov/s3scanner-webapp">⭐ Star this repository</a>
 </p>

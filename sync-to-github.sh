@@ -38,6 +38,11 @@ print_error() {
     printf "${RED}[ERROR]${NC} %s\n" "$1"
 }
 
+# Pre-configured repository settings
+GITHUB_USERNAME="vmanoilov"
+REPO_NAME="s3scanner-webapp"
+REPO_URL="https://github.com/vmanoilov/s3scanner-webapp"
+
 # Check if we're in the right environment
 if ! command -v git >/dev/null 2>&1; then
     print_error "Git is not installed. Please install git first."
@@ -54,11 +59,11 @@ if [ -f "/.dockerenv" ] || [ "$BOLT_ENV" = "true" ]; then
     git config --global init.defaultBranch main 2>/dev/null || true
     
     if [ -z "$(git config --global user.name 2>/dev/null)" ]; then
-        git config --global user.name "S3Scanner User"
+        git config --global user.name "vmanoilov"
     fi
     
     if [ -z "$(git config --global user.email 2>/dev/null)" ]; then
-        git config --global user.email "user@s3scanner.local"
+        git config --global user.email "vmanoilov@users.noreply.github.com"
     fi
 fi
 
@@ -74,7 +79,7 @@ if ! command -v gh >/dev/null 2>&1; then
 # Manual GitHub Setup Script
 # Run this on a system with GitHub CLI installed
 
-echo "=== Manual GitHub Setup ==="
+echo "=== Manual GitHub Setup for S3Scanner WebApp ==="
 echo "Run these commands on a system with git and GitHub CLI:"
 echo ""
 echo "# 1. Install GitHub CLI (if needed)"
@@ -86,14 +91,10 @@ echo "# 2. Authenticate with GitHub"
 echo "gh auth login"
 echo ""
 echo "# 3. Create repository"
-read -p "Enter your GitHub username: " USERNAME
-read -p "Enter repository name (default: s3scanner-web): " REPO_NAME
-REPO_NAME=${REPO_NAME:-s3scanner-web}
-
-echo "gh repo create $USERNAME/$REPO_NAME --public --description \"S3Scanner Web Application - Advanced S3 bucket scanner with web interface\""
+echo "gh repo create vmanoilov/s3scanner-webapp --public --description \"S3Scanner Web Application - Advanced S3 bucket scanner with web interface\""
 echo ""
 echo "# 4. Add remote and push"
-echo "git remote add origin https://github.com/$USERNAME/$REPO_NAME.git"
+echo "git remote add origin https://github.com/vmanoilov/s3scanner-webapp.git"
 echo "git branch -M main"
 echo "git push -u origin main"
 
@@ -233,7 +234,9 @@ Features:
 - PostgreSQL database support
 - RabbitMQ message queue
 - Automated deployment scripts
-- Multi-cloud provider support"
+- Multi-cloud provider support
+
+Repository: https://github.com/vmanoilov/s3scanner-webapp"
 
     print_success "Files committed successfully"
 fi
@@ -241,13 +244,6 @@ fi
 # Try GitHub CLI operations if available
 if command -v gh >/dev/null 2>&1; then
     print_status "GitHub CLI detected, proceeding with automated setup..."
-    
-    # Get user input
-    printf "Enter your GitHub username: "
-    read GITHUB_USERNAME
-    printf "Enter repository name (default: s3scanner-web): "
-    read REPO_NAME
-    REPO_NAME=${REPO_NAME:-s3scanner-web}
     
     printf "Make repository private? (y/N): "
     read PRIVATE_REPO
@@ -264,8 +260,8 @@ if command -v gh >/dev/null 2>&1; then
     fi
     
     # Create GitHub repository
-    print_status "Creating GitHub repository..."
-    if gh repo create "$GITHUB_USERNAME/$REPO_NAME" $PRIVATE_FLAG --description "S3Scanner Web Application - Advanced S3 bucket scanner" --source=. --remote=origin --push; then
+    print_status "Creating GitHub repository: $REPO_URL"
+    if gh repo create "$GITHUB_USERNAME/$REPO_NAME" $PRIVATE_FLAG --description "S3Scanner Web Application - Advanced S3 bucket scanner with web interface" --source=. --remote=origin --push; then
         print_success "Repository created and code pushed successfully!"
         
         # Display success information
@@ -274,11 +270,11 @@ if command -v gh >/dev/null 2>&1; then
         print_success "Repository Setup Complete!"
         echo "==================================="
         echo ""
-        printf "Repository URL: https://github.com/%s/%s\n" "$GITHUB_USERNAME" "$REPO_NAME"
-        printf "Clone URL: git clone https://github.com/%s/%s.git\n" "$GITHUB_USERNAME" "$REPO_NAME"
+        printf "Repository URL: %s\n" "$REPO_URL"
+        printf "Clone URL: git clone %s.git\n" "$REPO_URL"
         echo ""
         echo "Next Steps:"
-        echo "1. Visit your repository online"
+        echo "1. Visit your repository online at $REPO_URL"
         echo "2. Clone it elsewhere to work with it"
         echo "3. Set up development environment"
         echo ""
@@ -286,7 +282,7 @@ if command -v gh >/dev/null 2>&1; then
     else
         print_error "Failed to create repository"
         print_status "You can manually create the repository and add remote:"
-        printf "git remote add origin https://github.com/%s/%s.git\n" "$GITHUB_USERNAME" "$REPO_NAME"
+        printf "git remote add origin %s.git\n" "$REPO_URL"
         echo "git branch -M main"
         echo "git push -u origin main"
     fi
@@ -301,10 +297,11 @@ else
     print_status "To complete GitHub setup, run manual-github-setup.sh on a system with GitHub CLI."
     echo ""
     print_status "Or manually create repository on GitHub and run:"
-    echo "git remote add origin https://github.com/YOUR_USERNAME/s3scanner-web.git"
+    printf "git remote add origin %s.git\n" "$REPO_URL"
     echo "git branch -M main"
     echo "git push -u origin main"
     echo ""
 fi
 
 print_success "Setup complete!"
+print_status "Repository will be available at: $REPO_URL"

@@ -1,11 +1,11 @@
-# 🚀 GitHub Repository Setup Guide
+# 🚀 GitHub Repository Setup Guide for S3Scanner WebApp
 
-This guide will help you sync your S3Scanner Web Application to GitHub in just a few commands.
+This guide will help you sync your S3Scanner Web Application to GitHub at `https://github.com/vmanoilov/s3scanner-webapp`.
 
 ## 📋 Prerequisites
 
 - Git installed on your system
-- GitHub account
+- GitHub account (username: vmanoilov)
 - GitHub CLI (will be installed automatically if missing)
 
 ## 🎯 One-Command Setup
@@ -20,7 +20,7 @@ The script will:
 2. ✅ Initialize git repository
 3. ✅ Set up proper .gitignore
 4. ✅ Commit all files
-5. ✅ Create GitHub repository
+5. ✅ Create GitHub repository at `https://github.com/vmanoilov/s3scanner-webapp`
 6. ✅ Push code to GitHub
 7. ✅ Set up repository settings
 8. ✅ Create initial project issues
@@ -32,8 +32,8 @@ If you prefer manual setup:
 ### 1. Initialize Git
 ```bash
 git init
-git config user.name "Your Name"
-git config user.email "your.email@example.com"
+git config user.name "vmanoilov"
+git config user.email "vmanoilov@users.noreply.github.com"
 ```
 
 ### 2. Install GitHub CLI
@@ -64,21 +64,22 @@ git add .
 git commit -m "Initial commit: S3Scanner Web Application"
 
 # Create GitHub repository
-gh repo create your-username/s3scanner-web --public --source=. --remote=origin --push
+gh repo create vmanoilov/s3scanner-webapp --public --source=. --remote=origin --push
 ```
 
 ## 🎨 Repository Customization
 
 ### Repository Settings
+- **Repository URL**: `https://github.com/vmanoilov/s3scanner-webapp`
 - **Description**: "S3Scanner Web Application - Advanced S3 bucket scanner with web interface"
-- **Topics**: s3-scanner, security, aws, bucket-scanner, docker, react, fastapi, cybersecurity
+- **Topics**: s3-scanner, security, aws, bucket-scanner, docker, go, web-interface, cybersecurity
 - **License**: MIT
 - **GitHub Pages**: Enabled (for public repos)
 
 ### Branch Protection
 ```bash
 # Set up branch protection
-gh api repos/your-username/s3scanner-web/branches/main/protection \
+gh api repos/vmanoilov/s3scanner-webapp/branches/main/protection \
   --method PUT \
   --field required_status_checks='{"strict":true,"contexts":[]}' \
   --field enforce_admins=true \
@@ -112,17 +113,20 @@ git push origin v1.0.0
 After setup, your repository will have:
 
 ```
-s3scanner-web/
+s3scanner-webapp/
 ├── .github/
 │   └── workflows/           # CI/CD pipelines
-├── backend/                 # FastAPI backend
-├── frontend/                # React frontend
-├── nginx/                   # Reverse proxy config
-├── scripts/                 # Utility scripts
-├── docs/                    # Documentation
+├── bucket/                  # Bucket scanning logic
+├── cmd/                     # Command-line tools
+├── provider/                # Cloud provider integrations
+├── worker/                  # Background workers
+├── db/                      # Database operations
+├── permission/              # Permission checking
+├── .dev/                    # Development environment
+├── packaging/               # Docker and packaging configs
 ├── docker-compose.yml       # Main compose file
 ├── start.sh                # Deployment script
-├── sync-to-github.sh       # This setup script
+├── sync-to-github.sh       # GitHub sync script
 └── README.md               # Main documentation
 ```
 
@@ -137,7 +141,7 @@ s3scanner-web/
 ### 2. Team Collaboration
 ```bash
 # Add collaborators
-gh api repos/your-username/s3scanner-web/collaborators/collaborator-username \
+gh api repos/vmanoilov/s3scanner-webapp/collaborators/collaborator-username \
   --method PUT \
   --field permission=push
 ```
@@ -151,7 +155,7 @@ The script creates initial issues for:
 ### 4. Project Board
 ```bash
 # Create project board
-gh project create --title "S3Scanner Development" --body "Project management for S3Scanner Web Application"
+gh project create --title "S3Scanner WebApp Development" --body "Project management for S3Scanner Web Application"
 ```
 
 ## 🔐 Security Configuration
@@ -161,7 +165,7 @@ Add these secrets for GitHub Actions:
 
 ```bash
 # Add Docker registry credentials
-gh secret set DOCKER_USERNAME --body "your-docker-username"
+gh secret set DOCKER_USERNAME --body "vmanoilov"
 gh secret set DOCKER_TOKEN --body "your-docker-token"
 
 # Add deployment keys
@@ -189,8 +193,8 @@ gh secret set DEPLOY_KEY --body "$(cat ~/.ssh/deploy_key)"
 
 1. **Clone your repository elsewhere:**
    ```bash
-   git clone https://github.com/your-username/s3scanner-web.git
-   cd s3scanner-web
+   git clone https://github.com/vmanoilov/s3scanner-webapp.git
+   cd s3scanner-webapp
    chmod +x start.sh && ./start.sh
    ```
 
@@ -201,7 +205,7 @@ gh secret set DEPLOY_KEY --body "$(cat ~/.ssh/deploy_key)"
 
 3. **Set up webhooks:**
    ```bash
-   gh api repos/your-username/s3scanner-web/hooks --method POST \
+   gh api repos/vmanoilov/s3scanner-webapp/hooks --method POST \
      --field name=web \
      --field config.url=https://your-webhook.com/github \
      --field events='["push","pull_request"]'
@@ -223,7 +227,7 @@ gh auth login
 ssh -T git@github.com
 
 # Or use HTTPS
-git remote set-url origin https://github.com/your-username/s3scanner-web.git
+git remote set-url origin https://github.com/vmanoilov/s3scanner-webapp.git
 ```
 
 **Large Files:**
@@ -236,6 +240,7 @@ git add .gitattributes
 
 ## 📞 Support
 
+- **Repository URL**: `https://github.com/vmanoilov/s3scanner-webapp`
 - **GitHub CLI Documentation**: https://cli.github.com/manual/
 - **Git Documentation**: https://git-scm.com/doc
 - **GitHub Actions**: https://docs.github.com/en/actions
@@ -243,5 +248,5 @@ git add .gitattributes
 ---
 
 <p align="center">
-<strong>🎉 Your S3Scanner Web Application is now ready for GitHub! 🎉</strong>
+<strong>🎉 Your S3Scanner Web Application is now ready for GitHub at https://github.com/vmanoilov/s3scanner-webapp! 🎉</strong>
 </p>
